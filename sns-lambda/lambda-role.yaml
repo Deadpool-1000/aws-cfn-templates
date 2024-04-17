@@ -1,0 +1,31 @@
+Description: Template that creates a role for lambda function with basic execution policy
+Parameters:
+  RoleName:
+    Description: Add Name for the role you are creating
+    Type: String
+    Default: LambdaSNSRole
+Resources:
+  LambdaSNSRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Description: Role for lambda service
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      RoleName: !Ref RoleName
+      Tags:
+        - Key: application
+          Value: SNSToLambda
+Outputs:
+  OutputName:
+    Description: ARN of the role created
+    Value: !GetAtt LambdaSNSRole.Arn
+    Export:
+      Name: LambdaSNSRoleArn

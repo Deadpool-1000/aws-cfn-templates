@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: SNS Topic that invokes lambda function
+Parameters:
+  TopicName:
+    Description: "Name for your SNS topic"
+    Type: String
+    Default: "TestTopic"
+Resources:
+  lambdaSNSTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      TopicName: !Ref TopicName
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Endpoint: !ImportValue LambdaSNSFunctionArn
+          Protocol: "lambda"
+      Tags:
+        - Key: application
+          Value: SNSToLambda
+  LambdaInvokePermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !ImportValue LambdaSNSFunctionArn
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref lambdaSNSTopic
+Outputs:
+  SNSTopicArn:
+    Description: SNS Topic ARN
+    Value: !Ref lambdaSNSTopic
+    Export:
+      Name: lambdaSNSTopic

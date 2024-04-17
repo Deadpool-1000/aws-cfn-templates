@@ -1,0 +1,28 @@
+Description: Lambda function
+Parameters:
+  LambdaFunctionName:
+    Description: FunctionName
+    Type: String
+    Default: LambdaSQSFunction
+Resources:
+  LambdaFunc:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Role: !ImportValue LambdaSQSRoleArn
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+            for record in event['Records']:
+              print("test")
+              payload = record["body"]
+              print(str(payload))
+
+      Runtime: "python3.12"
+      Handler: "index.lambda_handler"
+Outputs:
+  LambdaARN:
+    Description: Lambda function ARN
+    Value: !GetAtt LambdaFunc.Arn
+    Export:
+      Name: LambdaSQSFuncArn

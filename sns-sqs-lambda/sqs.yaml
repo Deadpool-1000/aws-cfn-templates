@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A template for AWS SQS service.
+Parameters:
+  SQSQueueName:
+    Type: String
+    Description: Specifies the name of the queue.
+    Default: SNS-SQS-Lambda
+ 
+Resources:
+  SQSQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref SQSQueueName
+ 
+Outputs:
+  SQSQueueARN:
+    Description: Gives the ARN of SQS Queue.
+    Value: !GetAtt SQSQueue.Arn
+    Export:
+      Name: SQSQueueARN
+  SQSUrl:
+    Description: Gives the URL of the SQS Queue.
+    Value: !Ref SQSQueue
+    Export:
+      Name: SQSUrl

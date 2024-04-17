@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A template for SQS and lambda source mapping.
+ 
+Resources:
+  MyEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 10
+      Enabled: true
+      EventSourceArn: !ImportValue SQSQueueARN
+      FunctionName: !ImportValue LambdaSQSFuncArn

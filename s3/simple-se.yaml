@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Simple cloud formation for bucket creation and configuration
+Parameters:
+  bucketName:
+    Description: A Unique name for the new bucket.
+    Type: String
+    Default: milindb-example-bucket
+Resources:
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref bucketName
+      Tags:
+        - Key: type
+          Value: Dev
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      VersioningConfiguration:
+        Status: Enabled
+      WebsiteConfiguration:
+        ErrorDocument: index.html
+        IndexDocument: index.html
+  StaticWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticWebsiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowPublicAccess
+            Effect: Allow
+            Principal: "*"
+            Resource: !Sub 'arn:aws:s3:::${StaticWebsiteBucket}/*'
+            Action:
+              - 's3:GetObject'
+              

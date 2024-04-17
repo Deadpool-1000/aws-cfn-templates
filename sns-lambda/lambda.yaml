@@ -1,0 +1,40 @@
+Description: Lambda function
+Parameters:
+  LambdaFunctionName:
+    Description: Function Name
+    Type: String
+    Default: LambdaSNSFunction
+Resources:
+  LambdaSNSFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Role: !ImportValue LambdaSNSRoleArn
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+            print("hello world")
+            for record in event['Records']:
+              process_message(record)
+            print("done")
+          def process_message(record):
+            try:
+              message = record['Sns']['Message']
+              print(f"Processed message {message}")
+              # TODO; Process your record here
+          
+            except Exception as e:
+              print("An error occurred")
+              raise e
+
+      Runtime: "python3.12"
+      Handler: "index.lambda_handler"
+      Tags:
+        - Key: application
+          Value: SNSToLambda
+Outputs:
+  LambdaARN:
+    Description: Lambda function ARN
+    Value: !GetAtt LambdaSNSFunction.Arn
+    Export:
+      Name: LambdaSNSFunctionArn
