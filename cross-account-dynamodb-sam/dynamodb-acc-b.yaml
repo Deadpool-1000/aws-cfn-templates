@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation to create DynamoDB table
+Parameters:
+  TableName:
+    Description: Name for the DyanoDB table
+    Type: String
+    Default: ECommerceTable
+Resources:
+  ECommerceTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      BillingMode: PROVISIONED
+      GlobalSecondaryIndexes:
+        - IndexName: InvertedIndex
+          KeySchema:
+            - KeyType: HASH
+              AttributeName: SK
+            - KeyType: RANGE
+              AttributeName: PK
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            WriteCapacityUnits: 1
+            ReadCapacityUnits: 1
+      KeySchema:
+        - KeyType: HASH
+          AttributeName: PK
+        - KeyType: RANGE
+          AttributeName: SK
+      TableClass: STANDARD
+      TableName: !Ref TableName
+      Tags:
+        - Key: App
+          Value: ECommerce
+      ProvisionedThroughput:
+        WriteCapacityUnits: 1
+        ReadCapacityUnits: 1
+Outputs:
+  DynamoDBTableARN:
+    Description: ARN for created DyanoDB Table
+    Value: !GetAtt ECommerceTable.Arn
+    Export:
+      Name: DynamoDBTableARN
